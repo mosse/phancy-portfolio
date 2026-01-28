@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { testimonials, type Testimonial } from '@/data'
 
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
@@ -13,7 +14,10 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
         <div className="flex items-center justify-center gap-4">
           {/* Avatar placeholder */}
           <div className="w-12 h-12 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-400 text-xs">
-            {testimonial.author.split(' ').map((n) => n[0]).join('')}
+            {testimonial.author
+              .split(' ')
+              .map((n) => n[0])
+              .join('')}
           </div>
           <div className="text-left">
             <cite className="not-italic font-semibold text-neutral-900">
@@ -46,18 +50,38 @@ export function Testimonials() {
       aria-labelledby="testimonials-heading"
     >
       <div className="max-w-4xl mx-auto">
-        <h2
+        <motion.h2
           id="testimonials-heading"
           className="text-3xl sm:text-4xl font-bold tracking-tight text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
         >
           What People Say
-        </h2>
+        </motion.h2>
 
-        <div className="relative">
-          <TestimonialCard testimonial={testimonials[currentIndex]} />
+        <div className="relative min-h-[200px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <TestimonialCard testimonial={testimonials[currentIndex]} />
+            </motion.div>
+          </AnimatePresence>
 
           {/* Navigation */}
-          <div className="mt-10 flex items-center justify-center gap-4">
+          <motion.div
+            className="mt-10 flex items-center justify-center gap-4"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
             <button
               onClick={goToPrevious}
               className="p-2 rounded-full border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition-colors"
@@ -85,9 +109,9 @@ export function Testimonials() {
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
                     index === currentIndex
-                      ? 'bg-neutral-900'
+                      ? 'bg-neutral-900 scale-125'
                       : 'bg-neutral-300 hover:bg-neutral-400'
                   }`}
                   role="tab"
@@ -117,7 +141,7 @@ export function Testimonials() {
                 />
               </svg>
             </button>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

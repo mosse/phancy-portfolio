@@ -1,37 +1,57 @@
+'use client'
+
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { getFeaturedProjects, type Project } from '@/data'
 
-function ProjectCard({ project }: { project: Project }) {
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.1, 0.25, 1] as const,
+    },
+  },
+}
+
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
-    <Link
-      href={`/work/${project.slug}`}
-      className="group block"
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ delay: index * 0.1 }}
     >
-      <article className="relative overflow-hidden rounded-lg bg-neutral-100">
-        {/* Cover image placeholder */}
-        <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center text-neutral-400 group-hover:bg-neutral-300 transition-colors">
-          <span className="text-sm">Project Image</span>
-        </div>
+      <Link href={`/work/${project.slug}`} className="group block">
+        <article className="relative overflow-hidden rounded-lg bg-neutral-100">
+          {/* Cover image placeholder */}
+          <div className="aspect-[4/3] bg-neutral-200 flex items-center justify-center text-neutral-400 group-hover:bg-neutral-300 transition-colors">
+            <span className="text-sm">Project Image</span>
+          </div>
 
-        {/* Hover overlay with summary */}
-        <div className="absolute inset-0 bg-neutral-900/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-          <p className="text-white text-sm leading-relaxed line-clamp-3">
-            {project.overview}
+          {/* Hover overlay with summary */}
+          <div className="absolute inset-0 bg-neutral-900/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+            <p className="text-white text-sm leading-relaxed line-clamp-3">
+              {project.overview}
+            </p>
+          </div>
+        </article>
+
+        <div className="mt-4">
+          <p className="text-sm text-neutral-500 uppercase tracking-wider">
+            {project.category}
           </p>
+          <h3 className="mt-1 text-xl font-semibold group-hover:text-neutral-600 transition-colors">
+            {project.title}
+          </h3>
+          <p className="mt-1 text-neutral-600">{project.subtitle}</p>
+          <p className="mt-2 text-sm text-neutral-500">{project.role}</p>
         </div>
-      </article>
-
-      <div className="mt-4">
-        <p className="text-sm text-neutral-500 uppercase tracking-wider">
-          {project.category}
-        </p>
-        <h3 className="mt-1 text-xl font-semibold group-hover:text-neutral-600 transition-colors">
-          {project.title}
-        </h3>
-        <p className="mt-1 text-neutral-600">{project.subtitle}</p>
-        <p className="mt-2 text-sm text-neutral-500">{project.role}</p>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   )
 }
 
@@ -45,7 +65,13 @@ export function FeaturedWork() {
       aria-labelledby="featured-work-heading"
     >
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-end justify-between mb-12">
+        <motion.div
+          className="flex items-end justify-between mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <div>
             <h2
               id="featured-work-heading"
@@ -77,15 +103,21 @@ export function FeaturedWork() {
               />
             </svg>
           </Link>
-        </div>
+        </motion.div>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+          {featuredProjects.map((project, index) => (
+            <ProjectCard key={project.slug} project={project} index={index} />
           ))}
         </div>
 
-        <div className="mt-8 text-center sm:hidden">
+        <motion.div
+          className="mt-8 text-center sm:hidden"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+        >
           <Link
             href="/work"
             className="inline-flex items-center text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
@@ -106,7 +138,7 @@ export function FeaturedWork() {
               />
             </svg>
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

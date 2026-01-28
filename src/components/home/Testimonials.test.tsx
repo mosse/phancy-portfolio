@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Testimonials } from './Testimonials'
 import { testimonials } from '@/data'
@@ -35,7 +35,10 @@ describe('Testimonials', () => {
 
     await user.click(screen.getByRole('button', { name: /next testimonial/i }))
 
-    expect(screen.getByText(new RegExp(testimonials[1].quote))).toBeInTheDocument()
+    // Wait for animation to complete
+    await waitFor(() => {
+      expect(screen.getByText(new RegExp(testimonials[1].quote))).toBeInTheDocument()
+    })
   })
 
   it('navigates to previous testimonial when clicking previous', async () => {
@@ -45,9 +48,12 @@ describe('Testimonials', () => {
     // Click previous from first should go to last
     await user.click(screen.getByRole('button', { name: /previous testimonial/i }))
 
-    expect(
-      screen.getByText(new RegExp(testimonials[testimonials.length - 1].quote))
-    ).toBeInTheDocument()
+    // Wait for animation to complete
+    await waitFor(() => {
+      expect(
+        screen.getByText(new RegExp(testimonials[testimonials.length - 1].quote))
+      ).toBeInTheDocument()
+    })
   })
 
   it('wraps around to first when clicking next on last', async () => {
@@ -57,9 +63,14 @@ describe('Testimonials', () => {
     // Click next until we're at the last one, then one more
     for (let i = 0; i < testimonials.length; i++) {
       await user.click(screen.getByRole('button', { name: /next testimonial/i }))
+      // Small wait between clicks
+      await new Promise((r) => setTimeout(r, 50))
     }
 
-    expect(screen.getByText(new RegExp(testimonials[0].quote))).toBeInTheDocument()
+    // Wait for animation to complete
+    await waitFor(() => {
+      expect(screen.getByText(new RegExp(testimonials[0].quote))).toBeInTheDocument()
+    })
   })
 
   it('renders dot indicators for each testimonial', () => {
@@ -75,7 +86,10 @@ describe('Testimonials', () => {
     const dots = screen.getAllByRole('tab')
     await user.click(dots[2])
 
-    expect(screen.getByText(new RegExp(testimonials[2].quote))).toBeInTheDocument()
+    // Wait for animation to complete
+    await waitFor(() => {
+      expect(screen.getByText(new RegExp(testimonials[2].quote))).toBeInTheDocument()
+    })
   })
 
   it('marks current dot as selected', () => {
