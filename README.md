@@ -10,7 +10,8 @@ A modern, performant portfolio site built to showcase a world-class product desi
 - **Animations**: Framer Motion
 - **CMS**: Decap CMS (git-based, for longform blog posts)
 - **Short-form**: micro.blog (mobile-friendly, for notes/links)
-- **Deployment**: Vercel-ready
+- **Analytics**: Umami (privacy-focused, open source)
+- **Deployment**: Vercel
 
 ## Site Architecture
 
@@ -71,6 +72,15 @@ A modern, performant portfolio site built to showcase a world-class product desi
 - Pulled into site from micro.blog JSON feed
 - Displayed as a stream/timeline
 - micro.blog handles syndication to Mastodon, Bluesky, etc.
+
+**Music posts**: Tag listening posts in micro.blog (e.g., `#music` or `#listening`). Include a link to Bandcamp, Spotify, Apple Music, or SoundCloud. The site detects music URLs and renders an embedded player via oEmbed:
+
+| Platform | Embed quality |
+|----------|---------------|
+| Bandcamp | Full track (artist's choice) |
+| SoundCloud | Full or preview |
+| Spotify | 30-sec preview (full if logged in) |
+| Apple Music | 30-sec preview |
 
 #### 8. Contact
 - Simple contact form (name, email, message)
@@ -252,11 +262,14 @@ type Note = {
 
 ## Decap CMS Setup
 
-Decap CMS is configured via `public/admin/config.yml`:
+Decap CMS is configured via `public/admin/config.yml`.
+
+> **Note for Vercel**: Use the `github` backend (not `git-gateway`, which requires Netlify Identity).
 
 ```yaml
 backend:
-  name: git-gateway       # Or github for direct GitHub auth
+  name: github
+  repo: yourname/phancy-portfolio
   branch: main
 
 media_folder: public/images/blog
@@ -280,7 +293,7 @@ collections:
       - { name: body, label: Body, widget: markdown }
 ```
 
-Access the CMS at `yoursite.com/admin`.
+Access the CMS at `yoursite.com/admin`. You'll authenticate via GitHub OAuth.
 
 ## Getting Started
 
@@ -309,3 +322,74 @@ npx decap-server
 ```
 
 Then visit `http://localhost:3000/admin`.
+
+## Vercel Deployment
+
+### Environment variables
+
+Add these in Vercel Dashboard → Settings → Environment Variables:
+
+| Variable | Description |
+|----------|-------------|
+| `MICROBLOG_FEED_URL` | Your micro.blog JSON feed URL |
+| `NEXT_PUBLIC_UMAMI_WEBSITE_ID` | Umami analytics site ID (optional) |
+| `NEXT_PUBLIC_UMAMI_URL` | Umami script URL (optional) |
+
+### Revalidation (ISR)
+
+micro.blog content is fetched at build time. To keep notes fresh without full rebuilds, use Incremental Static Regeneration:
+
+```ts
+// src/app/notes/page.tsx
+export const revalidate = 3600; // Revalidate every hour
+```
+
+Or trigger on-demand revalidation via webhook when you post to micro.blog.
+
+### Preview deployments
+
+Vercel auto-creates preview deployments for every push. Use these to review Decap CMS commits before merging to main.
+
+## Analytics
+
+For privacy-respecting analytics that align with POSSE values, use **Umami**.
+
+### Why Umami?
+
+- Fully open source
+- No cookies, GDPR-compliant — no consent banner needed
+- Lightweight (~2KB script)
+- Self-hostable (Vercel + PlanetScale/Supabase) or use Umami Cloud
+- Simple dashboard: visits, referrers, top pages
+
+### Options
+
+| Option | Cost | Hosting |
+|--------|------|---------|
+| **Umami Cloud** | $9/mo | Managed |
+| **Self-hosted** | Free | Vercel + PlanetScale (free tier) |
+
+### Setup
+
+1. Create an Umami instance (cloud or self-hosted)
+2. Add your site and get the website ID
+3. Set environment variables in Vercel:
+   - `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
+   - `NEXT_PUBLIC_UMAMI_URL`
+4. Add the tracking script to `src/app/layout.tsx`:
+
+```tsx
+<Script
+  src={process.env.NEXT_PUBLIC_UMAMI_URL}
+  data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+  strategy="lazyOnload"
+/>
+```
+
+### Alternatives
+
+| Package | Notes |
+|---------|-------|
+| **Plausible** | Equally good, cloud or self-host |
+| **Vercel Analytics** | One-line add, but proprietary |
+| **GoatCounter** | Very simple, free for non-commercial |
