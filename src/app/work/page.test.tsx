@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import WorkPage from './page'
+import { projects, categories } from '@/data'
 
 describe('WorkPage', () => {
   it('renders the page heading', () => {
@@ -15,27 +16,28 @@ describe('WorkPage', () => {
 
   it('renders category filter buttons', () => {
     render(<WorkPage />)
-    const categories = ['All', 'Mobile', 'Web', 'Branding', 'Product']
 
     categories.forEach((category) => {
-      expect(screen.getByRole('button', { name: category })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: category.label })).toBeInTheDocument()
     })
   })
 
-  it('renders project cards with links', () => {
+  it('renders all projects', () => {
+    render(<WorkPage />)
+
+    projects.forEach((project) => {
+      expect(screen.getByRole('heading', { name: project.title })).toBeInTheDocument()
+    })
+  })
+
+  it('project cards link to case study pages', () => {
     render(<WorkPage />)
     const projectLinks = screen.getAllByRole('link')
 
-    // Should have 6 project links
-    const projectCardLinks = projectLinks.filter((link) =>
-      link.getAttribute('href')?.startsWith('/work/project-')
-    )
-    expect(projectCardLinks).toHaveLength(6)
-  })
-
-  it('project cards have titles', () => {
-    render(<WorkPage />)
-    expect(screen.getByText('Project Title 1')).toBeInTheDocument()
-    expect(screen.getByText('Project Title 6')).toBeInTheDocument()
+    // Each project should have a link to its case study
+    projects.forEach((project) => {
+      const link = projectLinks.find((l) => l.getAttribute('href') === `/work/${project.slug}`)
+      expect(link).toBeDefined()
+    })
   })
 })

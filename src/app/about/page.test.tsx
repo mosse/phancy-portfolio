@@ -1,32 +1,38 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import AboutPage from './page'
+import { bio, timeline, skills } from '@/data'
 
 describe('AboutPage', () => {
-  it('renders the page heading', () => {
+  it('renders the name as page heading', () => {
     render(<AboutPage />)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/about me/i)
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(bio.name)
   })
 
   it('renders bio section', () => {
     render(<AboutPage />)
-    expect(screen.getByText(/decade of experience/i)).toBeInTheDocument()
+    expect(screen.getByText(bio.about[0])).toBeInTheDocument()
   })
 
-  it('renders design philosophy section', () => {
+  it('renders design philosophy', () => {
     render(<AboutPage />)
-    expect(screen.getByRole('heading', { name: /design philosophy/i })).toBeInTheDocument()
-    expect(screen.getByText(/great design is invisible/i)).toBeInTheDocument()
+    expect(screen.getByText(bio.philosophy)).toBeInTheDocument()
   })
 
-  it('renders career timeline section', () => {
+  it('renders experience section', () => {
     render(<AboutPage />)
-    expect(screen.getByRole('heading', { name: /career timeline/i })).toBeInTheDocument()
-    expect(screen.getByText('2020 - Present')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /experience/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: timeline[0].role })).toBeInTheDocument()
   })
 
-  it('has portrait photo placeholder', () => {
+  it('renders skills section', () => {
     render(<AboutPage />)
-    expect(screen.getByText('Portrait Photo')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /skills & tools/i })).toBeInTheDocument()
+    expect(screen.getByText(skills[0].items[0])).toBeInTheDocument()
+  })
+
+  it('has portrait placeholder', () => {
+    render(<AboutPage />)
+    expect(screen.getByText('Portrait')).toBeInTheDocument()
   })
 })
