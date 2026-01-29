@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Bio, Timeline, Skills } from '@/components/about'
+import { PageTransition } from '@/components/layout'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -8,10 +9,12 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <Bio />
-      <Timeline />
-      <Skills />
-    </div>
+    <PageTransition>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <Bio />
+        <Timeline />
+        <Skills />
+      </div>
+    </PageTransition>
   )
 }
