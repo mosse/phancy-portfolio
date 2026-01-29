@@ -1,4 +1,5 @@
-import { type Note } from '@/lib/microblog'
+import { type Note, detectMusicEmbed } from '@/lib/microblog'
+import { MusicEmbed } from './MusicEmbed'
 
 type NoteCardProps = {
   note: Note
@@ -13,12 +14,15 @@ export function NoteCard({ note }: NoteCardProps) {
     minute: '2-digit',
   })
 
+  // Check for music embed in content
+  const musicEmbed = detectMusicEmbed(note.content_html)
+
   return (
-    <article className="py-6 border-b border-neutral-200 last:border-0">
+    <article className="py-6 border-b border-neutral-200 dark:border-neutral-700 last:border-0">
       <div className="flex items-start justify-between gap-4">
         <time
           dateTime={note.date_published}
-          className="text-sm text-neutral-500 whitespace-nowrap"
+          className="text-sm text-neutral-500 dark:text-neutral-400 whitespace-nowrap"
         >
           {formattedDate}
         </time>
@@ -26,7 +30,7 @@ export function NoteCard({ note }: NoteCardProps) {
           href={note.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
+          className="text-sm text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
           aria-label="View on micro.blog"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,10 +45,16 @@ export function NoteCard({ note }: NoteCardProps) {
       </div>
 
       <div
-        className="mt-2 prose prose-neutral prose-sm max-w-none prose-a:text-neutral-900 prose-a:underline prose-a:underline-offset-4"
+        className="mt-2 prose prose-neutral dark:prose-invert prose-sm max-w-none prose-a:text-neutral-900 dark:prose-a:text-neutral-100 prose-a:underline prose-a:underline-offset-4"
         dangerouslySetInnerHTML={{ __html: note.content_html }}
       />
 
+      {/* Music embed if detected */}
+      {musicEmbed && (
+        <MusicEmbed platform={musicEmbed.platform} url={musicEmbed.url} />
+      )}
+
+      {/* Image attachment */}
       {note.image && (
         <div className="mt-4">
           <img
