@@ -13,27 +13,39 @@ describe('BlogPage', () => {
     expect(screen.getByText(/long-form writing/i)).toBeInTheDocument()
   })
 
-  it('renders blog post previews', () => {
+  it('renders blog posts from MDX content', () => {
     render(<BlogPage />)
 
-    // Should have 3 placeholder blog posts
-    expect(screen.getByText('Blog Post Title 1')).toBeInTheDocument()
-    expect(screen.getByText('Blog Post Title 2')).toBeInTheDocument()
-    expect(screen.getByText('Blog Post Title 3')).toBeInTheDocument()
+    // Should render the actual MDX blog posts
+    expect(screen.getByText('Design Systems at Scale')).toBeInTheDocument()
+    expect(screen.getByText('Running Effective User Research Remotely')).toBeInTheDocument()
   })
 
   it('blog post links have correct hrefs', () => {
     render(<BlogPage />)
     const postLinks = screen.getAllByRole('link')
 
-    expect(postLinks[0]).toHaveAttribute('href', '/blog/post-1')
-    expect(postLinks[1]).toHaveAttribute('href', '/blog/post-2')
-    expect(postLinks[2]).toHaveAttribute('href', '/blog/post-3')
+    // Posts are sorted by date (newest first)
+    expect(postLinks[0]).toHaveAttribute('href', '/blog/design-systems-at-scale')
+    expect(postLinks[1]).toHaveAttribute('href', '/blog/user-research-remote')
   })
 
-  it('renders dates for blog posts', () => {
+  it('renders formatted dates for blog posts', () => {
     render(<BlogPage />)
-    expect(screen.getByText('January 5, 2025')).toBeInTheDocument()
-    expect(screen.getByText('January 10, 2025')).toBeInTheDocument()
+    expect(screen.getByText('March 15, 2025')).toBeInTheDocument()
+    expect(screen.getByText('February 20, 2025')).toBeInTheDocument()
+  })
+
+  it('renders reading time for posts', () => {
+    render(<BlogPage />)
+    // Reading time is calculated from content length
+    const readingTimes = screen.getAllByText(/min read/i)
+    expect(readingTimes.length).toBeGreaterThan(0)
+  })
+
+  it('renders tags for posts', () => {
+    render(<BlogPage />)
+    expect(screen.getByText('design systems')).toBeInTheDocument()
+    expect(screen.getByText('user research')).toBeInTheDocument()
   })
 })

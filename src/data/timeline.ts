@@ -109,7 +109,7 @@ export const skills: Skill[] = [
 ]
 
 export const bio = {
-  name: 'Alex Morgan',
+  name: 'Jessica Phan',
   title: 'Product Designer',
   tagline: 'Designing thoughtful digital experiences that balance user needs with business goals.',
   location: 'San Francisco, CA',
