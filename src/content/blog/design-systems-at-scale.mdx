@@ -1,0 +1,59 @@
+---
+title: "Design Systems at Scale"
+date: 2025-03-15
+description: "Lessons learned from building and maintaining a design system used by 50+ teams across multiple products."
+tags: ["design systems", "process", "scaling"]
+coverImage: "/images/blog/design-systems.jpg"
+draft: false
+---
+
+Building a design system is one thing. Scaling it across an organization with dozens of teams and hundreds of designers and engineers? That's a different challenge entirely.
+
+Over the past two years, I've helped grow our design system from a small component library into a comprehensive platform that serves over 50 teams. Here's what I learned along the way.
+
+## Start with principles, not components
+
+When we first started, we made the classic mistake of jumping straight into building components. We had buttons, forms, and cards within the first month. But without a clear set of principles guiding our decisions, we ended up with inconsistencies that took months to untangle.
+
+Now, we start every design system initiative with three questions:
+
+1. **What problem are we solving?** Not "we need a date picker" but "teams are spending 40% of their time rebuilding common patterns"
+2. **Who are we solving it for?** Designers? Engineers? Both? Product managers?
+3. **How will we measure success?** Adoption rate? Time saved? Consistency scores?
+
+## Documentation is the product
+
+Here's a controversial take: your design system's documentation is more important than its components. A beautifully crafted button component is worthless if nobody knows how to use it correctly.
+
+We invested heavily in documentation:
+
+- **Usage guidelines** for every component, not just API docs
+- **Do's and don'ts** with real examples from our products
+- **Migration guides** when components change
+- **Decision logs** explaining why things work the way they do
+
+## Governance without bureaucracy
+
+The hardest part of scaling a design system is governance. How do you maintain consistency without becoming a bottleneck? How do you accept contributions without losing coherence?
+
+Our approach:
+
+1. **Clear contribution guidelines** — Anyone can propose changes, but they need to follow a template
+2. **Office hours** — Weekly sessions where teams can bring questions and proposals
+3. **Champions program** — Designers embedded in product teams who advocate for the system
+4. **Automated checks** — Linting and testing catch issues before they reach review
+
+## Measure what matters
+
+We track four key metrics:
+
+- **Adoption rate**: What percentage of new features use system components?
+- **Time to productivity**: How quickly can new team members start building?
+- **Consistency score**: Automated audits of our products against the system
+- **Contribution rate**: How many external contributions do we receive?
+
+## Looking forward
+
+Design systems are never "done." They evolve with your products, your team, and your users. The key is building a foundation that can adapt without breaking.
+
+If you're starting your design system journey, my advice is simple: go slow to go fast. The time you invest in principles, documentation, and governance will pay dividends for years to come.

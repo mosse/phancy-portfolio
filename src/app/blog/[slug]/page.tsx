@@ -1,68 +1,94 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { getPostBySlug, getAllSlugs } from '@/lib/blog'
+import { mdxComponents } from '@/components/blog'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 
 type Props = {
   params: Promise<{ slug: string }>
 }
 
+export async function generateStaticParams() {
+  const slugs = getAllSlugs()
+  return slugs.map((slug) => ({ slug }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
+  const post = getPostBySlug(slug)
+
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+    }
+  }
+
   return {
-    title: slug.replace(/-/g, ' '),
-    description: `Read ${slug.replace(/-/g, ' ')}`,
+    title: post.title,
+    description: post.description,
   }
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
+  const post = getPostBySlug(slug)
+
+  if (!post) {
+    notFound()
+  }
+
+  const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
 
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
       {/* Header */}
       <header>
-        <time className="text-sm text-neutral-500">January 15, 2025</time>
-        <h1 className="mt-2 text-4xl sm:text-5xl font-bold tracking-tight capitalize">
-          {slug.replace(/-/g, ' ')}
+        <div className="flex items-center gap-4 text-sm text-neutral-500">
+          <time dateTime={post.date}>{formattedDate}</time>
+          <span>·</span>
+          <span>{post.readingTime}</span>
+        </div>
+        <h1 className="mt-3 text-4xl sm:text-5xl font-bold tracking-tight">
+          {post.title}
         </h1>
-        <p className="mt-4 text-xl text-neutral-600">
-          A compelling introduction that hooks the reader and sets expectations.
-        </p>
+        <p className="mt-4 text-xl text-neutral-600">{post.description}</p>
       </header>
 
       {/* Cover Image */}
-      <div className="mt-10 aspect-[2/1] bg-neutral-100 rounded-lg flex items-center justify-center text-neutral-400">
-        Cover Image
-      </div>
+      {post.coverImage && (
+        <div className="mt-10 aspect-[2/1] bg-neutral-100 rounded-lg overflow-hidden">
+          <img
+            src={post.coverImage}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
 
-      {/* Content Placeholder */}
-      <div className="mt-10 prose prose-neutral max-w-none">
-        <p className="text-neutral-600 leading-relaxed">
-          This is where the blog post content will be rendered from MDX. The actual content
-          will come from files in <code>src/content/blog/</code> managed by Decap CMS.
-        </p>
-        <p className="text-neutral-600 leading-relaxed mt-4">
-          For now, this serves as a placeholder to establish the route structure and layout.
-          Future phases will integrate MDX parsing and the CMS.
-        </p>
-        <h2 className="text-2xl font-semibold mt-8">Section Heading</h2>
-        <p className="text-neutral-600 leading-relaxed mt-4">
-          More content would go here, including code blocks, images, and other rich content
-          supported by MDX.
-        </p>
+      {/* MDX Content */}
+      <div className="mt-10 prose prose-neutral max-w-none prose-headings:font-semibold prose-a:text-neutral-900 prose-a:underline prose-a:underline-offset-4">
+        <MDXRemote source={post.content} components={mdxComponents} />
       </div>
 
       {/* Tags */}
-      <div className="mt-10 pt-10 border-t border-neutral-200">
-        <div className="flex flex-wrap gap-2">
-          {['design', 'process', 'case-study'].map((tag) => (
-            <span
-              key={tag}
-              className="px-3 py-1 text-sm bg-neutral-100 text-neutral-600 rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
+      {post.tags.length > 0 && (
+        <div className="mt-10 pt-10 border-t border-neutral-200">
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-3 py-1 text-sm bg-neutral-100 text-neutral-600 rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Navigation */}
       <nav className="mt-10 pt-10 border-t border-neutral-200">
