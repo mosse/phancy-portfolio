@@ -5,6 +5,7 @@ import NotesPage from './page'
 // Mock the microblog module
 vi.mock('@/lib/microblog', () => ({
   getNotes: vi.fn().mockResolvedValue([]),
+  detectMusicEmbed: vi.fn().mockReturnValue(null),
 }))
 
 // Import the mocked function to control it in tests
